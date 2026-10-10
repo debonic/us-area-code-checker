@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>US Area Code Checker</title>
+<style>
+:root{--bg:#f6f5f2;--pn:#fff;--tx:#1d1d1b;--mu:#6b6a64;--bd:#dedcd5;--nb:#fde8e6;--nd:#e5a39d;--nt:#8a1f17;--tb:#fff3d6;--td:#e6c26e;--tt:#6b4a00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--pn:#222220;--tx:#eeede8;--mu:#9a988f;--bd:#37362f;--nb:#3a1f1c;--nd:#7a3a34;--nt:#f2b8b2;--tb:#392e12;--td:#7a6420;--tt:#f0d68a}}
+:root[data-theme="dark"]{--bg:#171716;--pn:#222220;--tx:#eeede8;--mu:#9a988f;--bd:#37362f;--nb:#3a1f1c;--nd:#7a3a34;--nt:#f2b8b2;--tb:#392e12;--td:#7a6420;--tt:#f0d68a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:1.6rem;margin:6px 0 4px}h2{font-size:1.05rem;margin:0 0 10px}
+.sub,.small{color:var(--mu)}.small{font-size:.9rem}
+.panel{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:16px;margin:14px 0}
+label{display:block;font-weight:600;margin-bottom:6px}
+input,select,button{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);width:100%}
+button{background:var(--tx);color:var(--pn);border:0;margin-top:10px;font-weight:600;cursor:pointer}
+.result{padding:12px 14px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);margin-top:12px}
+.result.n{background:var(--nb);border-color:var(--nd);color:var(--nt)}
+.result.t{background:var(--tb);border-color:var(--td);color:var(--tt)}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.scroll{overflow:auto;max-height:420px;border:1px solid var(--bd);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:360px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd)}
+th{position:sticky;top:0;background:var(--pn);font-size:.85rem;color:var(--mu)}
+tr.n td{background:var(--nb);color:var(--nt)}tr.t td{background:var(--tb);color:var(--tt)}
+a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>US Area Code Checker</h1>
+<p class="sub">Check if a guest's phone number is local to Nashville or Tennessee. Covers every US area code in service.</p>
+
+<div class="panel">
+<label for="phone">Guest phone number or area code</label>
+<input id="phone" placeholder="e.g. (615) 555-0123, +1 629 555 0123, or 931" autocomplete="off" inputmode="tel">
+<button id="go" type="button">Check</button>
+<div id="result" class="result" aria-live="polite">Enter a number to check it.</div>
+</div>
+
+<div class="panel">
+<h2>Tennessee area codes</h2>
+<div class="scroll"><table><thead><tr><th>Code</th><th>Area</th><th>Flag</th></tr></thead><tbody id="tn"></tbody></table></div>
+</div>
+
+<div class="panel">
+<h2>All area codes</h2>
+<div class="filters">
+<input id="q" placeholder="Search code or state" autocomplete="off">
+<select id="f"></select>
+</div>
+<p class="small" id="count"></p>
+<div class="scroll"><table><thead><tr><th>Code</th><th>State / Place</th><th>Flag</th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+
+<div class="panel small">
+<strong>Important:</strong> An area code is not proof of where a guest lives. People keep their numbers after moving, and numbers may be mobile or VoIP. Use this as a screening flag, then verify residence through your normal process.<br><br>
+<span id="src"></span> New codes are added from time to time, so for the latest list use the official <a href="https://nanpa.com/reports/npa-reports" target="_blank" rel="noopener">NANPA NPA Reports</a>.
+</div>
+</div>
+<script>
+const D={"names":{"AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California","CO":"Colorado","CT":"Connecticut","DE":"Delaware","DC":"District of Columbia","FL":"Florida","GA":"Georgia","HI":"Hawaii","ID":"Idaho","IL":"Illinois","IN":"Indiana","IA":"Iowa","KS":"Kansas","KY":"Kentucky","LA":"Louisiana","ME":"Maine","MD":"Maryland","MA":"Massachusetts","MI":"Michigan","MN":"Minnesota","MS":"Mississippi","MO":"Missouri","MT":"Montana","NE":"Nebraska","NV":"Nevada","NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York","NC":"North Carolina","ND":"North Dakota","OH":"Ohio","OK":"Oklahoma","OR":"Oregon","PA":"Pennsylvania","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota","TN":"Tennessee","TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia","WA":"Washington","WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming"},"us":{"AK":"907","AL":"205 251 256 334 483 659 938","AR":"327 479 501 870","AZ":"480 520 602 623 928","CA":"209 213 279 310 323 341 350 357 369 408 415 424 442 510 530 559 562 619 626 628 650 657 661 669 707 714 738 747 760 805 818 820 831 837 840 858 909 916 925 949 951","CO":"303 719 720 748 970 983","CT":"203 475 860 959","DC":"202 771","DE":"302","FL":"239 305 321 324 352 386 407 448 561 645 656 689 727 728 754 772 786 813 850 863 904 941 954","GA":"229 404 470 478 678 706 762 770 912 943","HI":"808","IA":"319 515 563 641 712","ID":"208 986","IL":"217 224 309 312 331 447 464 618 630 708 730 773 779 815 847 861 872","IN":"219 260 317 463 574 765 812 930","KS":"316 620 785 913","KY":"270 364 502 606 859","LA":"225 318 337 457 504 985","MA":"339 351 413 508 617 774 781 857 978","MD":"227 240 301 410 443 667","ME":"207","MI":"231 248 269 313 517 586 616 679 734 810 906 947 989","MN":"218 320 507 612 651 763 924 952","MO":"235 314 417 557 573 636 660 816 975","MS":"228 471 601 662 769","MT":"406","NC":"252 336 472 704 743 828 910 919 980 984","ND":"701","NE":"308 402 531","NH":"603","NJ":"201 551 609 640 732 848 856 862 908 973","NM":"505 575","NV":"702 725 775","NY":"212 315 329 332 347 363 465 516 518 585 607 624 631 646 680 716 718 838 845 914 917 929 934","OH":"216 220 234 283 326 330 380 419 436 440 513 567 614 740 937","OK":"405 539 572 580 918","OR":"458 503 541 971","PA":"215 223 267 272 412 445 484 570 582 610 717 724 814 835 878","RI":"401","SC":"803 821 839 843 854 864","SD":"605","TN":"423 615 629 729 731 865 901 931","TX":"210 214 254 281 325 346 361 409 430 432 469 512 621 682 713 726 737 806 817 830 832 903 915 936 940 945 956 972 979","UT":"385 435 801","VA":"276 434 540 571 686 703 757 804 826 948","VT":"802","WA":"206 253 360 425 509 564","WI":"262 274 353 414 534 608 715 920","WV":"304 681","WY":"307"},"terr":{"787":"Puerto Rico","939":"Puerto Rico","340":"US Virgin Islands","671":"Guam","670":"Northern Mariana Islands","684":"American Samoa"},"ca":{"204":"Manitoba","226":"Ontario","236":"British Columbia","249":"Ontario","250":"British Columbia","257":"British Columbia","263":"Quebec","289":"Ontario","306":"Saskatchewan","343":"Ontario","354":"Quebec","365":"Ontario","367":"Quebec","368":"Alberta","382":"Ontario","403":"Alberta","416":"Ontario","418":"Quebec","428":"New Brunswick","431":"Manitoba","437":"Ontario","438":"Quebec","450":"Quebec","468":"Quebec","474":"Saskatchewan","506":"New Brunswick","514":"Quebec","519":"Ontario","548":"Ontario","579":"Quebec","581":"Quebec","584":"Manitoba","587":"Alberta","604":"British Columbia","613":"Ontario","639":"Saskatchewan","647":"Ontario","672":"British Columbia","683":"Ontario","705":"Ontario","709":"Newfoundland and Labrador","742":"Ontario","753":"Ontario","778":"British Columbia","780":"Alberta","782":"Nova Scotia/Prince Edward Island","807":"Ontario","819":"Quebec","825":"Alberta","867":"Northwest Territories/Nunavut/Yukon","873":"Quebec","879":"Newfoundland and Labrador","902":"Nova Scotia/Prince Edward Island","905":"Ontario","942":"Ontario"},"car":{"242":"Bahamas","246":"Barbados","264":"Anguilla","268":"Antigua and Barbuda","284":"British Virgin Islands","345":"Cayman Islands","441":"Bermuda","473":"Grenada","649":"Turks and Caicos Islands","658":"Jamaica","664":"Montserrat","721":"Sint Maarten","758":"Saint Lucia","767":"Dominica","784":"Saint Vincent and the Grenadines","809":"Dominican Republic","829":"Dominican Republic","849":"Dominican Republic","868":"Trinidad and Tobago","869":"Saint Kitts and Nevis","876":"Jamaica"},"tn":{"615":"n","629":"n","931":"m","423":"t","729":"t","731":"t","865":"t","901":"t"},"reg":{"615":"Nashville and nearby Middle Tennessee, including Franklin, Murfreesboro, Hendersonville, Gallatin and Lebanon","629":"Overlay on 615, covers the same Nashville area","931":"Middle Tennessee outside the Nashville area, including Clarksville, Cookeville, Columbia and Tullahoma","423":"East Tennessee, including Chattanooga, Johnson City, Kingsport and Bristol","729":"Overlay on 423, covers the same East Tennessee area","731":"West Tennessee outside Memphis, including Jackson","865":"Knoxville area","901":"Memphis area"},"tf":["800","822","833","844","855","866","877","888"],"ng":["500","521","522","523","524","525","526","527","528","529","532","533","538","544","566","577","588","600","622","633","700","710","900"],"plan":{"565":"Georgia (Savannah area), planned for December 2027","761":"Kentucky (Louisville area), planned, no date set yet"}};
+const M={};
+const rows=[];
+const add=(c,place,grp,g)=>{const r={c,place,grp,g,tier:D.tn[c]||''};rows.push(r);M[c]=r;};
+Object.entries(D.us).forEach(([s,v])=>v.split(' ').forEach(c=>add(c,D.names[s],s,'US')));
+Object.entries(D.terr).forEach(([c,p])=>add(c,p,'TERR','TERR'));
+Object.entries(D.ca).forEach(([c,p])=>add(c,p,'CAN','CAN'));
+Object.entries(D.car).forEach(([c,p])=>add(c,p,'CAR','CAR'));
+rows.sort((a,b)=>a.c-b.c);
+const usCount=rows.filter(r=>r.g==='US').length;
+const FLAG={n:'Nashville area',m:'Middle Tennessee',t:'Tennessee'};
+const NOTE=' Area codes do not prove where a guest lives.';
+
+function classify(raw){
+ raw=(raw||'').trim();
+ if(!raw)return['','Enter a number to check it.'];
+ const d=raw.replace(/\D/g,'');
+ if(raw[0]==='+'&&d[0]!=='1')return['','This is not a US or Canada (+1) number, so it has no US area code.'];
+ let c='';
+ if(d.length===3)c=d;
+ else if(d.length===10)c=d.slice(0,3);
+ else if(d.length===11&&d[0]==='1')c=d.slice(1,4);
+ else return['','Please enter a 3-digit area code or a 10-digit US number (it can start with 1 or +1).'];
+ if(!/^[2-9]\d\d$/.test(c)||/^\d11$/.test(c))return['',c+' is not a valid area code. Area codes cannot start with 0 or 1, and cannot end in 11.'];
+ const r=M[c];
+ if(r){
+  const reg=D.reg[c]||r.place;
+  if(r.tier==='n')return['n','<strong>FLAG: Nashville area code ('+c+')</strong><br>'+reg+'. Review the guest\'s stated residence.'];
+  if(r.tier==='m')return['t','<strong>Middle Tennessee ('+c+')</strong><br>'+reg+'. In Tennessee, but not one of the Nashville metro codes (615 and 629).'];
+  if(r.tier==='t')return['t','<strong>Tennessee area code ('+c+')</strong><br>'+reg+'. Not a Nashville area code.'];
+  if(r.g==='US')return['','<strong>Not Tennessee: '+r.place+' ('+c+')</strong><br>Area code '+c+' belongs to '+r.place+'.'+NOTE];
+  if(r.g==='TERR')return['','<strong>US territory: '+r.place+' ('+c+')</strong><br>Not Tennessee.'+NOTE];
+  if(r.g==='CAN')return['','<strong>Canada: '+r.place+' ('+c+')</strong><br>This is a Canadian number, not Tennessee.'+NOTE];
+  return['','<strong>Caribbean: '+r.place+' ('+c+')</strong><br>This is a +1 number from outside the US, not Tennessee.'+NOTE];
+ }
+ if(D.tf.includes(c))return['','<strong>Toll-free number ('+c+')</strong><br>Toll-free numbers are not tied to a location, so this cannot show where the guest is.'];
+ if(D.ng.includes(c))return['','<strong>Non-geographic code ('+c+')</strong><br>This code is not tied to a location.'];
+ if(D.plan[c])return['','<strong>'+c+' is not in service yet</strong><br>'+D.plan[c]+'.'];
+ return['','<strong>'+c+' is not in the active list</strong><br>It may be unassigned or very new. Check the NANPA NPA Reports to confirm.'];
+}
+
+if(typeof document!=='undefined'){
+ const $=id=>document.getElementById(id);
+ const line=r=>'<tr class="'+r.tier+'"><td><strong>'+r.c+'</strong></td><td>'+(D.reg[r.c]||r.place)+'</td><td>'+(FLAG[r.tier]||'')+'</td></tr>';
+ $('tn').innerHTML=rows.filter(r=>r.tier).map(line).join('');
+ const sts=Object.keys(D.us);
+ $('f').innerHTML='<option value="US">All US states and DC</option>'+sts.map(s=>'<option value="'+s+'">'+D.names[s]+'</option>').join('')+'<option value="TERR">US territories</option><option value="CAN">Canada</option><option value="CAR">Caribbean</option><option value="ALL">Everything (+1)</option>';
+ $('src').textContent=usCount+' US area codes (50 states and DC) plus 6 US territories, current through June 2026 (latest: 465, New York City). Checked against NANPA\'s official counts.';
+ function render(){
+  const q=$('q').value.trim().toLowerCase(),f=$('f').value;
+  const out=rows.filter(r=>{
+   if(f==='US'?r.g!=='US':f!=='ALL'&&r.grp!==f)return false;
+   if(!q)return true;
+   return r.c.startsWith(q)||r.place.toLowerCase().includes(q)||r.grp.toLowerCase()===q;
+  });
+  $('count').textContent=out.length+' area code'+(out.length===1?'':'s');
+  $('rows').innerHTML=out.map(r=>'<tr class="'+r.tier+'"><td><strong>'+r.c+'</strong></td><td>'+r.place+'</td><td>'+(FLAG[r.tier]||'')+'</td></tr>').join('');
+ }
+ function run(){const[c,h]=classify($('phone').value);const e=$('result');e.className='result '+c;e.innerHTML=h;}
+ $('go').onclick=run;
+ $('phone').addEventListener('keydown',e=>{if(e.key==='Enter')run()});
+ $('q').addEventListener('input',render);$('f').addEventListener('change',render);
+ render();
+}
+</script>
+</body>
+</html>
